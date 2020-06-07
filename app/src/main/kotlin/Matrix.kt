@@ -1,5 +1,8 @@
+import buraindo.Expression
+
 typealias Vector = List<Double>
 typealias Matrix<T> = List<List<T>>
+typealias System = List<Expression>
 
 fun dot(n: Vector, m: Vector): Double = n.zip(m, Double::times).sum()
 
