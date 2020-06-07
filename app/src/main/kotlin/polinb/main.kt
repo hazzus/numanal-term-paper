@@ -1,5 +1,7 @@
 package polinb
 
+import Env
+import Vector
 import dot
 import generateSolution
 import kotlin.math.pow
@@ -30,6 +32,7 @@ fun computeG(T: Double, coefficients: Coefficients, ps: PResults) : GResults {
     return GResults(gAlCl, gAlCl2, gAlCl3)
 }
 
+@Suppress("UNCHECKED_CAST")
 fun computeV(T: Double): Double {
     val res = computeCoefficients(T)
 //    println(res.print())
@@ -37,13 +40,14 @@ fun computeV(T: Double): Double {
     val env = PolinbEnv(res)
     val startApproach = listOf(0.1, 0.1, 0.1, 0.1, 0.1)
     val eps = 1e-20
-    val vectorSequence = env.generateSolution(
-        polinbSystem,
-        polinbJacobi,
+    val ff : Env<PolinbCoefficient, Double>.(List<Double>) -> List<Double> = polinbSystem()
+    val vectorSequence = generateSolution(env,
+        polinbSystem(),
+        polinbJacobi(),
         startApproach
     )
     val solution =
-        vectorSequence.takeWhile { vec -> env.polinbSystem(vec).run { dot(this, this) } > eps }.toList()
+        vectorSequence.takeWhile { vec -> env.ff(vec).run { dot(this, this) } > eps }.toList()
     val pRes = PResults(solution.last()[0], solution.last()[3], solution.last()[4])
 //    println(pRes.print())
 //    println()

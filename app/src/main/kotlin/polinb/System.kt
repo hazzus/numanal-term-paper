@@ -1,12 +1,11 @@
 package polinb
 
 import Env
+import EvaluationEnv
 import Matrix
-import Vector
 import intercept
 import interceptedListOf
 import polinb.PolinbCoefficient.*
-import zero
 
 @Suppress("EnumEntryName")
 enum class PolinbCoefficient {
@@ -30,54 +29,54 @@ enum class PolinbCoefficient {
     PG_AlCl3
 }
 
-val polinbSystem: Env<PolinbCoefficient>.(Vector) -> Vector = intercept {
+fun <R> polinbSystem(): Env<PolinbCoefficient, R>.(List<R>) -> List<R> = intercept {
     listOf(
-        K1 * P_AlCl.pow(2.0) * P_H2 - P_HCl.pow(2.0),
-        K2 * P_AlCl2 * P_H2 - P_HCl.pow(2.0),
-        K3 * P_AlCl3.pow(2.0) * P_H2.pow(3.0) - P_HCl.pow(6),
-        D_HCl * (PG_HCl - P_HCl) + 2.0 * D_H2 * (PG_H2 - P_H2),
-        D_AlCl * (PG_AlCl - P_AlCl) + 2.0 * D_AlCl2 * (PG_AlCl2 - P_AlCl2) + 3.0 * D_AlCl3 * (PG_AlCl3 - P_AlCl3) + D_HCl * (PG_HCl - P_HCl)
+        K1.c * (P_AlCl.c.pow(2)) * P_H2.c - (P_HCl.c pow 2),
+        K2.c * P_AlCl2.c * P_H2.c - (P_HCl.c pow 2),
+        K3.c * (P_AlCl3.c pow 2) * (P_H2.c pow 3) - (P_HCl.c pow 6),
+        D_HCl.c * (PG_HCl.c - P_HCl.c) + 2.0.c * D_H2.c * (PG_H2.c - P_H2.c),
+        D_AlCl.c * (PG_AlCl.c - P_AlCl.c) + 2.0.c * D_AlCl2.c * (PG_AlCl2.c - P_AlCl2.c) + 3.0.c * D_AlCl3.c * (PG_AlCl3.c - P_AlCl3.c) + D_HCl.c * (PG_HCl.c - P_HCl.c)
     )
 }
 
-val polinbJacobi: Matrix<Env<PolinbCoefficient>.(Vector) -> Double> = listOf(
+fun <R> polinbJacobi(): Matrix<Env<PolinbCoefficient, R>.(List<R>) -> R> = listOf(
     interceptedListOf(
-        { 2.0 * K1 * P_AlCl * P_H2 }, // alcl
-        { K1 * P_AlCl.pow(2.0) }, // h2
-        { -2.0 * P_HCl }, // hcl
-        zero, // alcl2
-        zero // alcl3
+        { 2.0.c * K1.c * P_AlCl.c * P_H2.c }, // alcl
+        { K1.c * P_AlCl.c.pow(2.0) }, // h2
+        { (-2.0).c * P_HCl.c }, // hcl
+        { 0.0.c }, // alcl2
+        { 0.0.c } // alcl3
     ),
     interceptedListOf(
-        zero,
-        { K2 * P_AlCl2 },
-        { -2.0 * P_HCl },
-        { K2 * P_H2 },
-        zero
+        { 0.0.c },
+        { K2.c * P_AlCl2.c },
+        { (-2.0).c * P_HCl.c },
+        { K2.c * P_H2.c },
+        { 0.0.c }
     ),
     interceptedListOf(
-        zero,
-        { 3.0 * K3 * P_AlCl3.pow(2.0) * P_H2.pow(2.0) },
-        { -6.0 * P_HCl.pow(5.0) },
-        zero,
-        { K3 * 2.0 * P_AlCl3 * P_H2.pow(3.0) }),
+        { 0.0.c },
+        { 3.0.c * K3.c * P_AlCl3.c.pow(2.0) * P_H2.c.pow(2.0) },
+        { (-6.0).c * P_HCl.c.pow(5.0) },
+        { 0.0.c },
+        { K3.c * 2.0.c * P_AlCl3.c * P_H2.c.pow(3.0) }),
     interceptedListOf(
-        zero,
-        { -2.0 * D_H2 },
-        { D_HCl * (-1.0) },
-        zero,
-        zero
+        { 0.0.c },
+        { (-2.0).c * D_H2.c },
+        { D_HCl.c * (-1.0).c },
+        { 0.0.c },
+        { 0.0.c }
     ),
     interceptedListOf(
-        { D_AlCl * (-1.0) },
-        zero,
-        { (-1.0) * D_HCl },
-        { -2.0 * D_AlCl2 },
-        { -3.0 * D_AlCl3 }
+        { D_AlCl.c * (-1.0).c },
+        { 0.0.c },
+        { (-1.0).c * D_HCl.c },
+        { (-2.0).c * D_AlCl2.c },
+        { (-3.0).c * D_AlCl3.c }
     )
 )
 
-class PolinbEnv(private val coeffs: Coefficients) : Env<PolinbCoefficient> {
+class PolinbEnv(private val coeffs: Coefficients) : EvaluationEnv<PolinbCoefficient> {
     override val PolinbCoefficient.c: Double
         get() = when (this) {
             K1 -> coeffs.K1

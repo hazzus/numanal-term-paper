@@ -1,51 +1,76 @@
 import kotlin.math.pow
 
-interface Env<TOKEN> {
+
+interface Env<TOKEN, R> {
+
+    val TOKEN.c: R
+    val Double.c: R
+
+    val variableIdentifiers: List<TOKEN>
+
+    operator fun R.times(x: R): R
+
+    operator fun R.plus(x: R): R
+
+    operator fun R.minus(x: R): R
+
+    operator fun R.div(x: R): R
+
+    infix fun R.pow(x: Double): R
+
+    infix fun R.pow(x: Int): R
+
+    fun zero(): (List<*>) -> R = { 0.0.c }
+
+    fun addIdentifiers(v: List<R>): Env<TOKEN, R> = NestedEnv(v, this)
+}
+
+fun Double.uniquePow(x: Double) = this.pow(x)
+
+fun Double.uniquePow(x: Int) = this.pow(x)
+
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+interface EvaluationEnv<TOKEN> : Env<TOKEN, Double> {
     /**
      * Returns the coefficient value by its identifier
      */
-    val TOKEN.c: Double
+    override val TOKEN.c: Double
 
     /**
      * List of available variable identifiers
      *
      * The order of variables, induced by this list, should coincide with parameter enumeration in the Jacobi matrix.
      */
-    val variableIdentifiers: List<TOKEN>
+    override val variableIdentifiers: List<TOKEN>
+    override val Double.c: Double
+        get() = this
 
-    operator fun TOKEN.times(x: Double): Double = c * x
-    operator fun Double.times(x: TOKEN): Double = this * x.c
-    operator fun TOKEN.times(x: TOKEN): Double = c * x.c
+    override fun Double.times(x: Double): Double = this.times(x)
 
-    operator fun TOKEN.plus(x: Double): Double = c + x
-    operator fun Double.plus(x: TOKEN): Double = this + x.c
-    operator fun TOKEN.plus(x: TOKEN): Double = c + x.c
+    override fun Double.plus(x: Double): Double = this.plus(x)
 
-    operator fun TOKEN.minus(x: Double): Double = c - x
-    operator fun Double.minus(x: TOKEN): Double = this - x.c
-    operator fun TOKEN.minus(x: TOKEN): Double = c - x.c
+    override fun Double.minus(x: Double): Double = this.minus(x)
 
-    operator fun TOKEN.div(x: Double): Double = c / x
-    operator fun Double.div(x: TOKEN): Double = this / x.c
-    operator fun TOKEN.div(x: TOKEN): Double = c / x.c
+    override fun Double.div(x: Double): Double = this.div(x)
 
-    fun TOKEN.pow(x: Double): Double = c.pow(x)
+    override fun Double.pow(x: Double): Double = this.uniquePow(x)
 
-    fun TOKEN.pow(x: Int): Double = c.pow(x)
+    override fun Double.pow(x: Int): Double = this.uniquePow(x)
 
-    fun addIdentifiers(v: Vector): Env<TOKEN> = NestedEnv(v, this)
 }
 
-fun <T, U> intercept(f: Env<U>.(Vector) -> T): Env<U>.(Vector) -> T = { vec: Vector ->
+
+fun <T, U, R> intercept(f: Env<U, R>.(List<R>) -> T): Env<U, R>.(List<R>) -> T = { vec: List<R> ->
     addIdentifiers(vec).f(vec)
 }
 
-fun <T, U> interceptedListOf(vararg fs: Env<U>.(Vector) -> T): List<Env<U>.(Vector) -> T> {
+fun <T, U, R> interceptedListOf(vararg fs: Env<U, R>.(List<R>) -> T): List<Env<U, R>.(List<R>) -> T> {
     return listOf(*fs).map(::intercept)
 }
 
-class NestedEnv<TOKEN>(private val additional: Vector, private val parentEnv: Env<TOKEN>) : Env<TOKEN> {
-    override val TOKEN.c: Double
+class NestedEnv<TOKEN, R>(private val additional: List<R>, private val parentEnv: Env<TOKEN, R>) :
+    Env<TOKEN, R> by parentEnv {
+    override val TOKEN.c: R
         get() {
             val key = this
             return if (key in parentEnv.variableIdentifiers) {
@@ -57,24 +82,27 @@ class NestedEnv<TOKEN>(private val additional: Vector, private val parentEnv: En
             }
         }
 
-    override val variableIdentifiers: List<TOKEN>
-        get() = parentEnv.variableIdentifiers
-
 }
 
-val zero: Env<*>.(Vector) -> Double = { 0.0 }
 
-
-fun <U> Env<U>.generateSolution(
-    system: Env<U>.(Vector) -> Vector,
-    jacobi: Matrix<Env<U>.(Vector) -> Double>,
+fun <U> generateSolution(
+    env: EvaluationEnv<U>,
+    system: Env<U, Any>.(List<Any>) -> List<Any>,
+    jacobi: Matrix<Env<U, Any>.(List<Any>) -> Any>,
     startApproach: Vector
-): Sequence<List<Double>> =
-    generateSequence(startApproach) { x_k ->
-        val fx = system(x_k)
-        val matrix = jacobi.map { it.map { it(x_k) } }.inverted()
-        val subtracted = matrix * fx
-        x_k.zip(subtracted, Double::minus)
+): Sequence<List<Double>> {
+
+    return generateSequence(startApproach) { x_k: List<Double> ->
+        @Suppress("UNCHECKED_CAST") val fx = (env as Env<U, Any>).system(x_k) as List<Double>
+        @Suppress("UNCHECKED_CAST") val matrix =
+            (jacobi.map { it.map { (env as Env<U, Any>).it(x_k) } } as Matrix<Double>).inverted()
+        val subtracted: List<Double> = matrix * fx
+        // here goes AST construction
+        // val ASTEnv = ExpressionEnv(env)
+        // val ast : Expression = ASTEnv.system(x_k - a * subtracted)
+        // val a = ast.differentiate().findOptimum()
+        x_k.zip(subtracted) { x, y -> x - /*a * */ y }
     }
+}
 
 
