@@ -37,8 +37,7 @@ fun computeV(T: Double): Double {
     val env = PolinbEnv(res)
     val startApproach = listOf(0.1, 0.1, 0.1, 0.1, 0.1)
     val eps = 1e-20
-    val vectorSequence = generateSolution(
-        env,
+    val vectorSequence = env.generateSolution(
         polinbSystem,
         polinbJacobi,
         startApproach
