@@ -5,29 +5,32 @@ import Matrix
 import Vector
 import intercept
 import interceptedListOf
+import polinb.PolinbCoefficient.*
 import zero
 
+@Suppress("EnumEntryName")
+enum class PolinbCoefficient {
+    K1,
+    K2,
+    K3,
+    D_HCl,
+    D_H2,
+    D_AlCl2,
+    D_AlCl3,
+    D_AlCl,
+    P_AlCl,
+    P_H2,
+    P_HCl,
+    P_AlCl2,
+    P_AlCl3,
+    PG_AlCl,
+    PG_HCl,
+    PG_H2,
+    PG_AlCl2,
+    PG_AlCl3
+}
 
-const val K1 = "k1"
-const val K2 = "k2"
-const val K3 = "k3"
-const val D_HCl = "d_hcl"
-const val D_H2 = "d_h2"
-const val D_AlCl = "d_alcl"
-const val D_AlCl2 = "d_alcl2"
-const val D_AlCl3 = "d_alcl3"
-const val P_AlCl = "p_alcl"
-const val P_H2 = "p_h2"
-const val P_HCl = "p_hcl"
-const val P_AlCl2 = "p_alcl2"
-const val P_AlCl3 = "p_alcl3"
-const val PG_AlCl = "pg_alcl"
-const val PG_HCl = "pg_hcl"
-const val PG_H2 = "pg_h2"
-const val PG_AlCl2 = "pg_alcl2"
-const val PG_AlCl3 = "pg_alcl3"
-
-val polinbSystem: Env.(Vector) -> Vector = intercept {
+val polinbSystem: Env<PolinbCoefficient>.(Vector) -> Vector = intercept {
     listOf(
         K1 * P_AlCl.pow(2.0) * P_H2 - P_HCl.pow(2.0),
         K2 * P_AlCl2 * P_H2 - P_HCl.pow(2.0),
@@ -37,7 +40,7 @@ val polinbSystem: Env.(Vector) -> Vector = intercept {
     )
 }
 
-val polinbJacobi: Matrix<Env.(Vector) -> Double> = listOf(
+val polinbJacobi: Matrix<Env<PolinbCoefficient>.(Vector) -> Double> = listOf(
     interceptedListOf(
         { 2.0 * K1 * P_AlCl * P_H2 }, // alcl
         { K1 * P_AlCl.pow(2.0) }, // h2
@@ -74,8 +77,8 @@ val polinbJacobi: Matrix<Env.(Vector) -> Double> = listOf(
     )
 )
 
-class PolinbEnv(private val coeffs: Coefficients) : Env {
-    override val String.c: Double
+class PolinbEnv(private val coeffs: Coefficients) : Env<PolinbCoefficient> {
+    override val PolinbCoefficient.c: Double
         get() = when (this) {
             K1 -> coeffs.K1
             K2 -> coeffs.K2
@@ -93,6 +96,6 @@ class PolinbEnv(private val coeffs: Coefficients) : Env {
             else -> error(":(")
         }
 
-    override val variableIdentifiers: List<String> = listOf("p_alcl", "p_h2", "p_hcl", "p_alcl2", "p_alcl3")
+    override val variableIdentifiers: List<PolinbCoefficient> = listOf(P_AlCl, P_H2, P_HCl, P_AlCl2, P_AlCl3)
 }
 
