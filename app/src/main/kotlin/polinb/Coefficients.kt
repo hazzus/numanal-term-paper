@@ -46,7 +46,7 @@ fun computeCoefficients(T: Double): Coefficients {
     val gAl = elAl.computeG0(T)
     val gHCl = elHCl.computeG0(T)
     val r = 8.314
-    val p = 100000.0
+    val p = 100_000.0
     val k1 = exp((2 * gAlCl + gH2 - 2 * gAl - 2 * gHCl) / (r * T)) / p
     val k2 = exp((gAlCl2 + gH2 - gAl - 2 * gHCl) / (r * T))
     val k3 = exp((2 * gAlCl3 + 3 * gH2 - 2 * gAl - 6 * gHCl) / (r * T)) * p
