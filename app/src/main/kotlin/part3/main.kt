@@ -19,7 +19,6 @@ const val roGaN = 6150.0
 fun solve(pGH2: Double, writer: OutputStreamWriter) {
     var pGAlCl3 = 0.0
     while (pGAlCl3 <= 30.0) {
-        println(pGAlCl3)
         val coefficients = computeCoefficients(pGAlCl3, pGH2)
         val env = Part3Env(coefficients)
         val initialApproximation = listOf(0.1, 0.1, 0.1, 0.1, 0.1, 0.1)
