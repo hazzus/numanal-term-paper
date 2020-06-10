@@ -1,15 +1,15 @@
-package polinb
+package part2
 
 import Env
 import Matrix
 import Vector
 import intercept
 import interceptedListOf
-import polinb.PolinbCoefficient.*
+import part2.Part2Coefficient.*
 import zero
 
 @Suppress("EnumEntryName")
-enum class PolinbCoefficient {
+enum class Part2Coefficient {
     K1,
     K2,
     K3,
@@ -30,7 +30,7 @@ enum class PolinbCoefficient {
     PG_AlCl3
 }
 
-val polinbSystem: Env<PolinbCoefficient>.(Vector) -> Vector = intercept {
+val part2System: Env<Part2Coefficient>.(Vector) -> Vector = intercept {
     listOf(
         K1 * P_AlCl.pow(2.0) * P_H2 - P_HCl.pow(2.0),
         K2 * P_AlCl2 * P_H2 - P_HCl.pow(2.0),
@@ -40,7 +40,7 @@ val polinbSystem: Env<PolinbCoefficient>.(Vector) -> Vector = intercept {
     )
 }
 
-val polinbJacobi: Matrix<Env<PolinbCoefficient>.(Vector) -> Double> = listOf(
+val part2Jacobi: Matrix<Env<Part2Coefficient>.(Vector) -> Double> = listOf(
     interceptedListOf(
         { 2.0 * K1 * P_AlCl * P_H2 }, // alcl
         { K1 * P_AlCl.pow(2.0) }, // h2
@@ -77,25 +77,25 @@ val polinbJacobi: Matrix<Env<PolinbCoefficient>.(Vector) -> Double> = listOf(
     )
 )
 
-class PolinbEnv(private val coeffs: Coefficients) : Env<PolinbCoefficient> {
-    override val PolinbCoefficient.c: Double
+class Part2Env(private val coeffs: Coefficients) : Env<Part2Coefficient> {
+    override val Part2Coefficient.c: Double
         get() = when (this) {
-            K1 -> coeffs.K1
-            K2 -> coeffs.K2
-            K3 -> coeffs.K3
+            K1 -> coeffs.K4
+            K2 -> coeffs.K5
+            K3 -> coeffs.K6
             D_HCl -> coeffs.dHCl
             D_H2 -> coeffs.dH2
-            D_AlCl -> coeffs.dAlCl
-            D_AlCl2 -> coeffs.dAlCl2
-            D_AlCl3 -> coeffs.dAlCl3
+            D_AlCl -> coeffs.dGaCl
+            D_AlCl2 -> coeffs.dGaCl2
+            D_AlCl3 -> coeffs.dGaCl3
             PG_H2 -> coeffs.pGH2
             PG_HCl -> coeffs.pGHCl
-            PG_AlCl -> coeffs.pGAlCl
-            PG_AlCl2 -> coeffs.pGAlCl2
-            PG_AlCl3 -> coeffs.pGAlCl3
+            PG_AlCl -> coeffs.pGGaCl
+            PG_AlCl2 -> coeffs.pGGaCl2
+            PG_AlCl3 -> coeffs.pGGaCl3
             else -> error(":(")
         }
 
-    override val variableIdentifiers: List<PolinbCoefficient> = listOf(P_AlCl, P_H2, P_HCl, P_AlCl2, P_AlCl3)
+    override val variableIdentifiers: List<Part2Coefficient> = listOf(P_AlCl, P_H2, P_HCl, P_AlCl2, P_AlCl3)
 }
 

@@ -1,4 +1,4 @@
-package polinb
+package part2
 
 import dot
 import generateSolution
@@ -24,9 +24,9 @@ fun computeG(T: Double, coefficients: Coefficients, ps: PResults) : GResults {
     val r = 8314.0
     val d = 0.01
     val denominator = r * T * d
-    val gAlCl = coefficients.dAlCl * (coefficients.pGAlCl - ps.pAlCl) / denominator
-    val gAlCl2 = coefficients.dAlCl2 * (coefficients.pGAlCl2 - ps.pAlCl2) / denominator
-    val gAlCl3 = coefficients.dAlCl3 * (coefficients.pGAlCl3 - ps.pAlCl3) / denominator
+    val gAlCl = coefficients.dGaCl * (coefficients.pGGaCl - ps.pAlCl) / denominator
+    val gAlCl2 = coefficients.dGaCl2 * (coefficients.pGGaCl2 - ps.pAlCl2) / denominator
+    val gAlCl3 = coefficients.dGaCl3 * (coefficients.pGGaCl3 - ps.pAlCl3) / denominator
     return GResults(gAlCl, gAlCl2, gAlCl3)
 }
 
@@ -34,16 +34,16 @@ fun computeV(T: Double): Double {
     val res = computeCoefficients(T)
 //    println(res.print())
     // solving a system of equations
-    val env = PolinbEnv(res)
+    val env = Part2Env(res)
     val startApproach = listOf(0.1, 0.1, 0.1, 0.1, 0.1)
     val eps = 1e-20
     val vectorSequence = env.generateSolution(
-        polinbSystem,
-        polinbJacobi,
+        part2System,
+        part2Jacobi,
         startApproach
     )
     val solution =
-        vectorSequence.takeWhile { vec -> env.polinbSystem(vec).run { dot(this, this) } > eps }.toList()
+        vectorSequence.takeWhile { vec -> env.part2System(vec).run { dot(this, this) } > eps }.toList()
     val pRes = PResults(solution.last()[0], solution.last()[3], solution.last()[4])
 //    println(pRes.print())
 //    println()

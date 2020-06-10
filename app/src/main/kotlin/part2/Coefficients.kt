@@ -1,4 +1,4 @@
-package polinb
+package part2
 
 import kotlin.math.exp
 import kotlin.math.ln
@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 
 
 class Coefficients(
-        val dHCL: Double,
+        val dHCl: Double,
         val dH2: Double,
         val dGaCl: Double,
         val dGaCl2: Double,
@@ -16,14 +16,14 @@ class Coefficients(
         val K5: Double,
         val K6: Double,
         // P^g_i
-        val pGAlCl: Double = 0.0,
-        val pGAlCl2: Double = 0.0,
-        val pGAlCl3: Double = 0.0,
+        val pGGaCl: Double = 0.0,
+        val pGGaCl2: Double = 0.0,
+        val pGGaCl3: Double = 0.0,
         val pGH2: Double = 0.0,
         val pGHCl: Double = 10_000.0,
         val pGN2: Double = 90_000.0
 ) {
-    fun print() = "D_HCl = $dHCL\n" +
+    fun print() = "D_HCl = $dHCl\n" +
             "D_H2 = $dH2\n" +
             "D_GaCl = $dGaCl\n" +
             "D_GaGl2 = $dGaCl2\n" +
@@ -51,9 +51,9 @@ fun computeCoefficients(T: Double): Coefficients {
 //    val k1 = exp((2 * gAlCl + gH2 - 2 * gAl - 2 * gHCl) / (r * T)) / p
 //    val k2 = exp((gAlCl2 + gH2 - gAl - 2 * gHCl) / (r * T))
 //    val k3 = exp((2 * gAlCl3 + 3 * gH2 - 2 * gAl - 6 * gHCl) / (r * T)) * p
-    vak k4 = 0
-    val k5 = 0
-    val k6 = 0
+    val k4 = 0.0
+    val k5 = 0.0
+    val k6 = 0.0
     return Coefficients(
             elHCl.computeD(T),
             elH2.computeD(T),
