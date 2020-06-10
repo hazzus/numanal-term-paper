@@ -34,32 +34,32 @@ class Coefficients(
 }
 
 fun computeCoefficients(T: Double): Coefficients {
-    val elHCl = HCl()
-    val elH2 = H2()
     val elGaCl = GaCl()
     val elGaCl2 = GaCl2()
     val elGaCl3 = GaCl3()
+    val elHCl = part2.HCl()
+    val elH2 = part2.H2()
     val elGa = Ga()
-//    val gAlCl = elAlCl.computeG0(T)
-//    val gAlCl2 = elAlCl2.computeG0(T)
-//    val gAlCl3 = elAlCl3.computeG0(T)
-//    val gH2 = elH2.computeG0(T)
-//    val gAl = elAl.computeG0(T)
-//    val gHCl = elHCl.computeG0(T)
-//    val r = 8.314
-//    val p = 100_000.0
-//    val k1 = exp((2 * gAlCl + gH2 - 2 * gAl - 2 * gHCl) / (r * T)) / p
-//    val k2 = exp((gAlCl2 + gH2 - gAl - 2 * gHCl) / (r * T))
-//    val k3 = exp((2 * gAlCl3 + 3 * gH2 - 2 * gAl - 6 * gHCl) / (r * T)) * p
-    val k4 = 0.0
-    val k5 = 0.0
-    val k6 = 0.0
-    return Coefficients(
-            elHCl.computeD(T),
-            elH2.computeD(T),
+    val gGaCl = elGaCl.computeG0(T)
+    val gGaCl2 = elGaCl2.computeG0(T)
+    val gGaCl3 = elGaCl3.computeG0(T)
+    val gH2 = elH2.computeG0(T)
+    val gAl = elGa.computeG0(T)
+    val gHCl = elHCl.computeG0(T)
+    val r = 8.314
+    val p = 100_000.0
+    // val k1 = exp((2 * gAlCl + gH2 - 2 * gAl - 2 * gHCl) / (r * T)) / p
+    // val k2 = exp((gAlCl2 + gH2 - gAl - 2 * gHCl) / (r * T))
+    // val k3 = exp((2 * gAlCl3 + 3 * gH2 - 2 * gAl - 6 * gHCl) / (r * T)) * p
+    val k4 = 1.0
+    val k5 = 1.0
+    val k6 = 1.0
+    return part2.Coefficients(
             elGaCl.computeD(T),
             elGaCl2.computeD(T),
             elGaCl3.computeD(T),
+            elHCl.computeD(T),
+            elH2.computeD(T),
             k4, k5, k6
     )
 }
@@ -80,14 +80,14 @@ abstract class Element {
 
     fun computeD(T: Double): Double {
         val sigmaN2 = 3.798
-        val P = 100000
+        val p = 100000
         val sigmaElN2 = (sigma + sigmaN2) / 2
         val epsilonN2 = 71.4
         val epsilonElN2 = sqrt(epsilonN2 * epsilon)
         val omega = 1.074 * (T / epsilonElN2).pow(-0.1604)
         val muN2 = 28.0135
         val muElN2 = 2 * muN2 * mu / (muN2 + mu)
-        return 2.628 * 10.0.pow(-2.0) * T.pow(1.5) / (P * sigmaElN2 * omega * muElN2.pow(0.5))
+        return 2.628 * 10.0.pow(-2.0) * T.pow(1.5) / (p * sigmaElN2 * omega * muElN2.pow(0.5))
     }
 
     fun printD(T: Double): String {
@@ -95,19 +95,19 @@ abstract class Element {
         return "D_$name = $d"
     }
 
-//    fun computeF(T: Double): Double {
-//        val x = T / (10.0.pow(4.0))
-//        return f1 + f2 * ln(x) + f3 * x.pow(-2.0) + f4 * (1.0 / x) + f5 * x + f6 * x * x + f7 * x * x * x
-//    }
-//
-//    fun computeG0(T: Double): Double {
-//        return h - computeF(T) * T
-//    }
-//
-//    fun printG0(T: Double): String {
-//        val g = computeG0(T)
-//        return "G0_$name = $g"
-//    }
+    fun computeF(T: Double): Double {
+        val x = T / (10.0.pow(4.0))
+        return f1 + f2 * ln(x) + f3 * x.pow(-2.0) + f4 * (1.0 / x) + f5 * x + f6 * x * x + f7 * x * x * x
+    }
+
+    fun computeG0(T: Double): Double {
+        return h - computeF(T) * T
+    }
+
+    fun printG0(T: Double): String {
+        val g = computeG0(T)
+        return "G0_$name = $g"
+    }
 }
 
 class HCl : Element() {

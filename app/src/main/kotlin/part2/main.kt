@@ -4,30 +4,30 @@ import dot
 import generateSolution
 import kotlin.math.pow
 
-class GResults(val gAlCl: Double,
-               val gAlCl2: Double,
-               val gAlCl3: Double) {
-    fun print() = "G_AlCl = $gAlCl\n" +
-            "G_AlCl2 = $gAlCl2\n" +
-            "G_AlCl3 = $gAlCl3"
+class GResults(val gGaCl: Double,
+               val gGaCl2: Double,
+               val gGaCl3: Double) {
+    fun print() = "G_GaCl = $gGaCl\n" +
+            "G_GaCl2 = $gGaCl2\n" +
+            "G_GaCl3 = $gGaCl3"
 }
 
-class PResults(val pAlCl: Double,
-               val pAlCl2: Double,
-               val pAlCl3: Double) {
-    fun print() = "P_AlCl = $pAlCl\n" +
-            "P_AlCl2 = $pAlCl2\n" +
-            "P_AlCl3 = $pAlCl3"
+class PResults(val pGaCl: Double,
+               val pGaCl2: Double,
+               val pGaCl3: Double) {
+    fun print() = "P_GaCl = $pGaCl\n" +
+            "P_GaCl2 = $pGaCl2\n" +
+            "P_GaCl3 = $pGaCl3"
 }
 
 fun computeG(T: Double, coefficients: Coefficients, ps: PResults) : GResults {
     val r = 8314.0
     val d = 0.01
     val denominator = r * T * d
-    val gAlCl = coefficients.dGaCl * (coefficients.pGGaCl - ps.pAlCl) / denominator
-    val gAlCl2 = coefficients.dGaCl2 * (coefficients.pGGaCl2 - ps.pAlCl2) / denominator
-    val gAlCl3 = coefficients.dGaCl3 * (coefficients.pGGaCl3 - ps.pAlCl3) / denominator
-    return GResults(gAlCl, gAlCl2, gAlCl3)
+    val gGaCl = coefficients.dGaCl * (coefficients.pGGaCl - ps.pGaCl) / denominator
+    val gGaCl2 = coefficients.dGaCl2 * (coefficients.pGGaCl2 - ps.pGaCl2) / denominator
+    val gGaCl3 = coefficients.dGaCl3 * (coefficients.pGGaCl3 - ps.pGaCl3) / denominator
+    return GResults(gGaCl, gGaCl2, gGaCl3)
 }
 
 fun computeV(T: Double): Double {
@@ -55,10 +55,10 @@ fun computeV(T: Double): Double {
     println()
     val mu = 26.9815 // kg/kmol
     val po = 2690.0 // kg/m^3
-    return (gRes.gAlCl + gRes.gAlCl2 + gRes.gAlCl3) * mu * 10.0.pow(9) / po
+    return (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
 }
 
 fun main() {
-    val t = 623.15
+    val t = 923.15
     println("V = ${computeV(t)}")
 }
