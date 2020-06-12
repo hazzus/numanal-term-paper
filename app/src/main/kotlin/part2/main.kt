@@ -53,8 +53,8 @@ fun computeV(T: Double): Double {
     val gRes = computeG(T, res, pRes)
     println(gRes.print())
     println()
-    val mu = 26.9815 // kg/kmol
-    val po = 2690.0 // kg/m^3
+    val mu = 69.723 // kg/kmol
+    val po = 5900.0 // kg/m^3
     return (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
 }
 
