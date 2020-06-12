@@ -37,23 +37,20 @@ fun computeCoefficients(T: Double): Coefficients {
     val elGaCl = GaCl()
     val elGaCl2 = GaCl2()
     val elGaCl3 = GaCl3()
-    val elHCl = part2.HCl()
-    val elH2 = part2.H2()
+    val elHCl = HCl()
+    val elH2 = H2()
     val elGa = Ga()
     val gGaCl = elGaCl.computeG0(T)
     val gGaCl2 = elGaCl2.computeG0(T)
     val gGaCl3 = elGaCl3.computeG0(T)
     val gH2 = elH2.computeG0(T)
-    val gAl = elGa.computeG0(T)
+    val gGa = elGa.computeG0(T)
     val gHCl = elHCl.computeG0(T)
     val r = 8.314
     val p = 100_000.0
-    // val k1 = exp((2 * gAlCl + gH2 - 2 * gAl - 2 * gHCl) / (r * T)) / p
-    // val k2 = exp((gAlCl2 + gH2 - gAl - 2 * gHCl) / (r * T))
-    // val k3 = exp((2 * gAlCl3 + 3 * gH2 - 2 * gAl - 6 * gHCl) / (r * T)) * p
-    val k4 = 1.0
-    val k5 = 1.0
-    val k6 = 1.0
+    val k4 = exp((2 * gGaCl + gH2 - 2 * gGa - 2 * gHCl) / (r * T)) / p
+    val k5 = exp((gGaCl2 + gH2 - gGa - 2 * gHCl) / (r * T))
+    val k6 = exp((2 * gGaCl3 + 3 * gH2 - 2 * gGa - 6 * gHCl) / (r * T)) * p
     return part2.Coefficients(
             elGaCl.computeD(T),
             elGaCl2.computeD(T),
