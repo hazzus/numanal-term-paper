@@ -7,11 +7,11 @@ import kotlin.math.sqrt
 
 
 class Coefficients(
-        val dHCl: Double,
-        val dH2: Double,
         val dGaCl: Double,
         val dGaCl2: Double,
         val dGaCl3: Double,
+        val dHCl: Double,
+        val dH2: Double,
         val K4: Double,
         val K5: Double,
         val K6: Double,
