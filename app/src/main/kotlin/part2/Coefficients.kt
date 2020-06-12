@@ -183,7 +183,7 @@ class GaCl3 : Element() {
 }
 
 class Ga : Element() {
-    override val sigma = 69.723
+    override val sigma = 0.0
     override val epsilon = 0.0
     override val mu = 0.0
     override val name = "Ga"
