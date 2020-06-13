@@ -43,7 +43,7 @@ val part2System: Env<Part2Coefficient>.(Vector) -> Vector = intercept {
 val part2Jacobi: Matrix<Env<Part2Coefficient>.(Vector) -> Double> = listOf(
     interceptedListOf(
         { 2.0 * K4 * P_GaCl * P_H2 }, // gacl
-        { K5 * P_GaCl.pow(2.0) }, // h2
+        { K4 * P_GaCl.pow(2.0) }, // h2
         { -2.0 * P_HCl }, // hcl
         zero, // gacl2
         zero // gacl3

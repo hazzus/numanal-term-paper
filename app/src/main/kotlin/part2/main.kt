@@ -3,6 +3,7 @@ package part2
 import dot
 import generateSolution
 import kotlin.math.pow
+import kotlin.random.Random.Default.nextDouble
 
 class GResults(val gGaCl: Double,
                val gGaCl2: Double,
@@ -32,11 +33,17 @@ fun computeG(T: Double, coefficients: Coefficients, ps: PResults) : GResults {
 
 fun computeV(T: Double): Double {
     val res = computeCoefficients(T)
-//    println(res.print())
+    // println(res.print())
     // solving a system of equations
     val env = Part2Env(res)
-    val startApproach = listOf(0.1, 0.1, 0.1, 0.1, 0.1)
-    val eps = 1e-20
+    val startApproach = listOf(
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0)
+    )
+    val eps = 1e-10
     val vectorSequence = env.generateSolution(
         part2System,
         part2Jacobi,
@@ -51,14 +58,16 @@ fun computeV(T: Double): Double {
 //        println("$name: $value")
 //    }
     val gRes = computeG(T, res, pRes)
-    println(gRes.print())
-    println()
+    //println(gRes.print())
+    //println()
     val mu = 69.723 // kg/kmol
     val po = 5900.0 // kg/m^3
     return (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
 }
 
 fun main() {
-    val t = 923.15
-    println("V = ${computeV(t)}")
+    for (i in 0..300) {
+      val t = 923.15 + i
+      println("V_$t = ${computeV(t)}")
+    }
 }
