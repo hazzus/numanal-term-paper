@@ -62,12 +62,54 @@ fun computeV(T: Double): Double {
     //println()
     val mu = 69.723 // kg/kmol
     val po = 5900.0 // kg/m^3
-    return (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
+    val V = (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
+    println("(${T}, ${gRes.gGaCl}, ${gRes.gGaCl2}, ${gRes.gGaCl3}, ${V})")
+    return V
+}
+
+fun computeAll() {
+    val startT = 923.15
+    val startApproach = listOf(0.3, 0.3, 0.3, 0.3, 0.3)
+    /*
+    val startApproach = listOf(
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0),
+            nextDouble(0.0, 1.0)
+    )
+     */
+    var approach = startApproach
+    val eps = 1e-16
+    val mu = 69.723 // kg/kmol
+    val po = 5900.0 // kg/m^3
+
+    for (i in 0..300) {
+        val T = i + startT
+        val res = computeCoefficients(T)
+        val env = Part2Env(res)
+        val vectorSequence = env.generateSolution(
+                part2System,
+                part2Jacobi,
+                approach
+        )
+        val solution =
+                vectorSequence.takeWhile { vec -> env.part2System(vec).run { dot(this, this) } > eps }.toList()
+        val pRes = PResults(solution.last()[0], solution.last()[3], solution.last()[4])
+        val gRes = computeG(T, res, pRes)
+        val V = (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
+        approach = solution.last()
+
+        println("(${T}, ${gRes.gGaCl}, ${gRes.gGaCl2}, ${gRes.gGaCl3}, ${V})")
+    }
 }
 
 fun main() {
+    /*
     for (i in 0..300) {
       val t = 923.15 + i
-      println("V_$t = ${computeV(t)}")
+      computeV(t)
     }
+     */
+    computeAll()
 }
