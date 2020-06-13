@@ -2,6 +2,8 @@ package part2
 
 import dot
 import generateSolution
+import java.io.File
+import java.io.OutputStreamWriter
 import kotlin.math.pow
 import kotlin.random.Random.Default.nextDouble
 
@@ -67,7 +69,7 @@ fun computeV(T: Double): Double {
     return V
 }
 
-fun computeAll() {
+fun computeAll(writer: OutputStreamWriter) {
     val startT = 923.15
     val startApproach = listOf(0.3, 0.3, 0.3, 0.3, 0.3)
     /*
@@ -100,16 +102,13 @@ fun computeAll() {
         val V = (gRes.gGaCl + gRes.gGaCl2 + gRes.gGaCl3) * mu * 10.0.pow(9) / po
         approach = solution.last()
 
-        println("(${T}, ${gRes.gGaCl}, ${gRes.gGaCl2}, ${gRes.gGaCl3}, ${V})")
+        writer.appendln("%.2f".format(T) + " %.25f".format(gRes.gGaCl) + " %.25f".format(gRes.gGaCl2) + " %.25f".format(gRes.gGaCl3) + " %.25f".format(V))
+        writer.flush()
     }
 }
 
 fun main() {
-    /*
-    for (i in 0..300) {
-      val t = 923.15 + i
-      computeV(t)
-    }
-     */
-    computeAll()
+    val writer = File("app/part2Res").writer()
+    computeAll(writer)
+    writer.close()
 }
