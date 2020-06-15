@@ -16,13 +16,22 @@ const val roAlN = 3200.0
 const val muGaN = 83.730
 const val roGaN = 6150.0
 
-fun solve(pGH2: Double, writer: OutputStreamWriter) {
+fun solve(pGH2: Double, solutionWriter: OutputStreamWriter, plotDataDir: String) {
+    val alCl3Writer = File(plotDataDir + "G_AlCl3_to_x_g").writer()
+    val gaClWriter = File(plotDataDir + "G_GaCl_to_x_g").writer()
+    val vWriter = File(plotDataDir + "V_g_AlGaN_to_x_g").writer()
+    val xWriter = File(plotDataDir + "x_to_x_g").writer()
+
+    var initialApproximation = listOf(0.3, 0.3, 0.3, 0.3, 0.3, 0.3)
+
     var pGAlCl3 = 0.0
     while (pGAlCl3 <= 30.0) {
         val coefficients = computeCoefficients(pGAlCl3, pGH2)
+
+        val xG = pGAlCl3 / 30
+
         val env = Part3Env(coefficients)
-        val initialApproximation = listOf(0.1, 0.1, 0.1, 0.1, 0.1, 0.1)
-        val eps = 1e-15
+        val eps = 1e-14
         val vectorSequence = env.generateSolution(
                 part3System,
                 part3Jacobi,
@@ -40,22 +49,44 @@ fun solve(pGH2: Double, writer: OutputStreamWriter) {
         // calculate V^G_AlGaN
         val vGAlGaN = (gAlCl3 * (muAlN / roAlN) + gGaCl * (muGaN / roGaN)) * 10.0.pow(9)
 
-        writer.appendln("Solution for P^G_AlCl3 = $pGAlCl3, P^G_H2 = $pGH2:")
-        writer.appendln(solutionStr.substring(1, length - 1))
-        writer.appendln("G_AlCl3 = $gAlCl3, G_GaCl = $gGaCl")
-        writer.appendln("V^G_AlGaN = $vGAlGaN")
-        writer.appendln()
+        // get x
+        val x = solution.last()[0]
 
-        writer.flush()
+        // write results with description
+//        solutionWriter.appendln("Solution for P^G_AlCl3 = $pGAlCl3, P^G_H2 = $pGH2:")
+//        solutionWriter.appendln(solutionStr.substring(1, length - 1))
+//        solutionWriter.appendln("G_AlCl3 = $gAlCl3, G_GaCl = $gGaCl")
+//        solutionWriter.appendln("V^G_AlGaN = $vGAlGaN")
+//        solutionWriter.appendln()
+//
+//        solutionWriter.flush()
 
-        pGAlCl3 += 0.001
+        // write plot data
+
+        alCl3Writer.appendln("${"%.10f".format(xG)} ${"%.15f".format(gAlCl3)}")
+        gaClWriter.appendln("${"%.10f".format(xG)} ${"%.15f".format(gGaCl)}")
+        vWriter.appendln("${"%.10f".format(xG)} ${"%.15f".format(vGAlGaN)}")
+        xWriter.appendln("${"%.10f".format(xG)} ${"%.15f".format(x)}")
+
+        alCl3Writer.flush()
+        gaClWriter.flush()
+        vWriter.flush()
+        xWriter.flush()
+
+        pGAlCl3 += 0.01
+        initialApproximation = solution.last()
     }
+
+    alCl3Writer.close()
+    gaClWriter.close()
+    vWriter.close()
+    xWriter.close()
 }
 
 fun calculateResults() {
     val writer = File("app/part3Files/output/solution").writer()
-    solve(0.0, writer)
-    solve(9847.0, writer)
+    solve(0.0, writer, "app/part3Files/plots/firstCase/")
+    solve(9847.0, writer, "app/part3Files/plots/secondCase/")
     writer.close()
 }
 
