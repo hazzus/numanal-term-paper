@@ -108,8 +108,8 @@ fun computeCoefficients(pGAlCl3: Double, pGH2: Double): Coefficients {
             k10,
             pGAlCl3,
             pGH2,
-            30.0 - pGAlCl3,
-            98470.0 - pGH2
+            98470.0 - pGH2,
+            30.0 - pGAlCl3
     )
 }
 
@@ -123,6 +123,7 @@ class Coefficients(
         val K10: Double,
         val pGAlCl3: Double,
         val pGH2: Double,
+        val pGN2: Double,
         val pGGaCl: Double,
         val pGHCl: Double = 0.0,
         val pGNH3: Double = 1500.0
@@ -137,6 +138,7 @@ class Coefficients(
             K10 = $K10
             pGHCl = $pGHCl
             pGH2 = $pGH2
+            pGN2 = $pGN2
             pGNH3 = $pGNH3
             pGAlCl3 = $pGAlCl3
             pGGaCl = $pGGaCl
